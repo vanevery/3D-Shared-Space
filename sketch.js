@@ -43,7 +43,6 @@ function mousePressed() {
   print(myPos);
   p5l.send(JSON.stringify(myPos));
   all['me'].updatePos((mouseX - width/2), (mouseY - height/2));
-  
 }
 
 function mouseDragged() {
@@ -76,9 +75,16 @@ class Avatar {
   }
   
   draw() {
+    // Body
+    translate(this.x, this.y+avatarSize, 0);
+    box(avatarSize/2, avatarSize*2, avatarSize/2);
+    translate(-this.x, -this.y-avatarSize, 0);
+
+    // Head
     translate(this.x, this.y, 0);
-    texture(this.vid);
     box(avatarSize, avatarSize, avatarSize);
     translate(-this.x,-this.y,0);
+    texture(this.vid); // How do you turn this off?
+
   }
 }
