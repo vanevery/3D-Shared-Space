@@ -9,8 +9,6 @@
 *
 */
 
-
-
 let all = {};
 let p5l;
 let groundTexture;
@@ -53,15 +51,17 @@ function setup() {
   myVideo.hide();
 
   // add a debug grid so we can tell where we are
-  debugMode(GRID, 25, 25, 0, 0, 0);
+  // debugMode(GRID, 25, 25, 0, 0, 0);
 }
+
+
 
 function draw() {
   background(220, 230, 250);
 
   lights();
 
-  // addGround();
+  addGround();
 
   cameraControls();
 
@@ -74,18 +74,24 @@ function draw() {
   }
 }
 
+
+/*
+* This function adds a ground plane to the scene with a repeating texture on it!
+*/
 function addGround() {
   // have to push and pop
   push();
   // box has height of 1 so 1/2 of that
   rotateX(Math.PI / 2);
-  scale(100, 100, 100);
-  // technique for achieving a repeating texture from
+  scale(50, 50, 50);
+  // we are using the vertex() function here instead of plane(),
+  // such that we can manually adjust the UV coordinates for a
+  // repeating texture. For more info, see this example:
   // https://github.com/processing/p5.js/issues/2189
   textureWrap(REPEAT);
   texture(groundTexture);
-  let u = 128,
-    v = 128;
+  let u = 2048,
+    v = 2048;
   beginShape(TRIANGLES);
   vertex(-1, -1, 0, 0, 0);
   vertex(1, -1, 0, u, 0);
@@ -98,6 +104,10 @@ function addGround() {
   pop();
 }
 
+
+/*
+* This function controls the movement of the camera in the space according to keypresses
+*/
 function cameraControls() {
   // out controls
   let leftRightMove = 0,
@@ -123,6 +133,9 @@ function cameraControls() {
 
 }
 
+/*
+* This function sends our current position and rotation to the other players in the space
+*/
 function sendStats(){
   let cameraPosition = {
     x: cam.eyeX, // There is no x, y, z
@@ -149,6 +162,10 @@ function gotStream(stream, id) {
   all[id] = new Avatar(stream, 0, 0, 0);
 }
 
+
+/*
+* This function controls the rotation of the camera in the space when dragging the mouse
+*/
 function mouseDragged() {
   let scaleFactor = 0.01;
   let deltaX = pmouseX - mouseX;
@@ -158,6 +175,9 @@ function mouseDragged() {
   cam.tilt(-deltaY * scaleFactor);
 }
 
+/*
+* This function deals with incoming position and rotation from other players
+*/
 function gotData(data, id) {
   let stats = JSON.parse(data);
   let position = stats.position;
@@ -170,6 +190,10 @@ function gotDisconnect(id) {
   delete all[id];
 }
 
+
+/*
+* This class sets up an 'avatar' representation of another player in space
+*/
 class Avatar {
   constructor(vid, x, y, z) {
     this.updatePos(x, y, z);
